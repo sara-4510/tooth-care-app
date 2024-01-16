@@ -1,6 +1,13 @@
 <!-- Include Config -->
 <?php
 include __DIR__ . '/../../config.php';
+include __DIR__ . '/../../helpers/AppManager.php';
+
+$currentUrl = $_SERVER['SCRIPT_NAME'];
+
+// Extract the last filename from the URL
+$currentFilename = basename($currentUrl);  // e.g., "dashboard.php"
+
 ?>
 <!DOCTYPE html>
 <html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="assets/" data-template="vertical-menu-template-free">
@@ -70,10 +77,24 @@ include __DIR__ . '/../../config.php';
 
                     <ul class="menu-inner py-1">
                         <!-- Dashboard -->
-                        <li class="menu-item active">
-                            <a href="index.html" class="menu-link">
+                        <li class="menu-item <?= $currentFilename === "dashboard.php" ? 'active' : '' ?>">
+                            <a href="<?= url('views/admin/dashboard.php') ?>" class="menu-link">
                                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                                <div data-i18n="Analytics">Dashboard</div>
+                            </a>
+                        </li>
+
+                        <li class="menu-item <?= $currentFilename === "appointment_booking.php" ? 'active' : '' ?>">
+                            <a href="<?= url('views/admin/appointment_booking.php') ?>" class="menu-link">
+                                <i class="menu-icon tf-icons bx bx-run"></i>
                                 <div data-i18n="Analytics">Appointment Booking</div>
+                            </a>
+                        </li>
+
+                        <li class="menu-item <?= $currentFilename === "users.php" ? 'active' : '' ?>">
+                            <a href="<?= url('views/admin/users.php') ?>" class="menu-link">
+                                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                                <div data-i18n="Analytics">User</div>
                             </a>
                         </li>
 
@@ -107,7 +128,7 @@ include __DIR__ . '/../../config.php';
                                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                     <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                         <div class="avatar avatar-online">
-                                            <img src="assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                                            <img src="<?= asset('assets/img/avatars/1.png') ?>" alt class="w-px-40 h-auto rounded-circle" />
                                         </div>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">

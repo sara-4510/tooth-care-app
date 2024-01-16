@@ -1,7 +1,7 @@
 <?php
 
 require_once('./../../config.php');
-include __DIR__ . './../../helpers/AppManager.php';
+include __DIR__ . '/../../helpers/AppManager.php';
 
 $sm = AppManager::getSM();
 $error = $sm->getAttribute("error");

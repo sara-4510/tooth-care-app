@@ -19,6 +19,7 @@ if (empty($email) || empty($password)) {
         if ($correct) {
             $sm->setAttribute("userId", $user['id']);
             $sm->setAttribute("username", $user['username']);
+            $sm->setAttribute("permission", $user['permission']);
 
             header('location: ../index.php');
             exit;

@@ -17,6 +17,9 @@ class User extends BaseModel
 
     protected function addNewRec()
     {
+        // Hash the password before storing it
+        $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+
         $param = array(
             ':username' => $this->username,
             ':password' => $this->password,
@@ -49,5 +52,48 @@ class User extends BaseModel
             WHERE id = :id",
             $param
         );
+    }
+
+    function createUser($username, $password, $permission, $email, $is_active = 1)
+    {
+        $userModel = new User();
+
+        // Check if username or email already exists
+        $existingUser = $userModel->getUserByUsernameOrEmail($username, $email);
+        if ($existingUser) {
+            // Handle the error (return an appropriate message or throw an exception)
+            return false; // Or throw an exception with a specific error message
+        }
+
+        $user = new User();
+        $user->username = $username;
+        $user->password = $password;
+        $user->permission = $permission;
+        $user->email = $email;
+        $user->is_active = $is_active;
+
+        if ($user->addNewRec()) {
+            return true; // User created successfully
+        } else {
+            return false; // User creation failed (likely due to database error)
+        }
+    }
+
+    public function getUserByUsernameOrEmail($username, $email)
+    {
+        $param = array(
+            ':username' => $username,
+            ':email' => $email
+        );
+
+        $sql = "SELECT * FROM " . $this->getTableName() . " WHERE username = :username OR email = :email";
+        $result = $this->pm->run($sql, $param);
+
+        if (!empty($result)) {  // Check if the array is not empty
+            $user = $result[0]; // Assuming the first row contains the user data
+            return $user;
+        } else {
+            return null;
+        }
     }
 }

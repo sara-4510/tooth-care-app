@@ -130,9 +130,14 @@ include __DIR__ . '/../../config.php';
                                             <div class="dropdown-divider"></div>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" href="auth-login-basic.html">
+                                            <a class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                 <i class="bx bx-power-off me-2"></i>
-                                                <span class="align-middle">Log Out</span>
+                                                <span class="align-middle">
+                                                    Logout
+                                                </span>
+                                                <form id="logout-form" action="<?= url('views/auth/logout.php') ?>" method="POST" class="d-none">
+
+                                                </form>
                                             </a>
                                         </li>
                                     </ul>

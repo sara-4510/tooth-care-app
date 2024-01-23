@@ -53,12 +53,12 @@ $users = $userModel->getAll();
                                             <?php } ?>
                                         </div>
                                     </td>
-                                    <!-- <td>
+                                    <td>
                                         <div>
-                                            <a class="btn btn-sm btn-info m-2" href="edit.php?id=<?= $c['id']; ?>">Edit</a>
-                                            <a class="btn btn-sm btn-danger m-2" href="#" onclick="confirmDelete(<?= $c['id']; ?>)">Delete</a>
+                                            <a class="btn btn-sm btn-info m-2 edit-user" data-id="<?=$c['id'];?>" data-username="<?=$c['username'];?>" data-email="<?=$c['email'];?>" >Edit</a>
+                                            <a class="btn btn-sm btn-danger m-2 d-none" href="#" onclick="confirmDelete(<?= $c['id'];?>">Delete</a>
                                         </div>
-                                    </td> -->
+                                    </td>
                                 </tr>
                             <?php
                             }
@@ -80,6 +80,73 @@ $users = $userModel->getAll();
                 <input type="hidden" name="action" value="create_user">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel1">Create User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="username" class="form-label">User Name</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter Name" required />
+                        </div>
+                    </div>
+                    <div class="row g-1">
+                        <div class="col mb-0">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="xxxx@xxx.xx" required />
+                        </div>
+
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col mb-0 form-password-toggle">
+                            <label class="form-label" for="password">Password</label>
+                            <div class="input-group">
+                                <input type="password" name="password" class="form-control" id="password" placeholder="············" aria-describedby="basic-default-password2" required>
+                                <span id="basic-default-password2" class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                            </div>
+                        </div>
+                        <div class="col mb-0 form-password-toggle">
+                            <label class="form-label" for="basic-default-password12">Confirm Password</label>
+                            <div class="input-group">
+                                <input type="password" name="confirm_password" class="form-control" id="basic-default-password12" placeholder="············" aria-describedby="basic-default-password2" required>
+                                <span id="basic-default-password2" class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col mb-0">
+                            <label class="form-label" for="permission">Permission</label>
+                            <div class="input-group">
+                                <label class="input-group-text" for="inputGroupSelect01">Options</label>
+                                <select class="form-select" id="permission" name="permission" required>
+                                    <option selected="" value="">Choose...</option>
+                                    <option value="operator">Operator</option>
+                                    <option value="doctor">Doctor</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <div id="alert-container"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" id="create-now" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Update user Modal -->
+<div class="modal fade " id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="update-user-form" action="<?= url('services/ajax_functions.php') ?>">
+                <input type="hidden" name="action" value="create_user">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Edit User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -188,6 +255,18 @@ require_once('../layouts/footer.php');
                 var message = ('Form is not valid. Please check your inputs.');
                 showAlert(message, 'danger');
             }
+        });
+
+        $('.edit-user').on('click', function() {
+            var user_id = $(this).data('id');
+            var username = $(this).data('username');
+            // alert(name);
+            // alert(user_id);
+            var email = $(this).data('email');
+
+            $('#editUserModal #username').val(username);
+            $('#editUserModal #email').val(email);
+            $('#editUserModal').modal('show');
         });
     });
 </script>

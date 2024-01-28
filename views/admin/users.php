@@ -55,9 +55,8 @@ $users = $userModel->getAll();
                                     </td>
                                     <td>
                                         <div>
-                                            <a class="btn btn-sm btn-info m-2 edit-user" data-id="<?=$c['id'];?>" data-username="<?=$c['username'];?>" data-email="<?=$c['email'];?>" >Edit</a>
-                                            <a class="btn btn-sm btn-danger m-2 d-none" href="#" onclick="confirmDelete(<?= $c['id'];?>">Delete</a>
-                                        </div>
+                                        <button class="btn btn-sm btn-info m-2 edit-user" data-id="<?= $c['id']; ?>">Edit</button>
+                                            <button class="btn btn-sm btn-danger m-2 delete-user" data-id="<?= $c['id']; ?>">Delete</button>  </div>
                                     </td>
                                 </tr>
                             <?php
@@ -139,12 +138,14 @@ $users = $userModel->getAll();
         </div>
     </div>
 </div>
-<!-- Update user Modal -->
+
+<!-- Update User Modal -->
 <div class="modal fade " id="editUserModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="update-user-form" action="<?= url('services/ajax_functions.php') ?>">
-                <input type="hidden" name="action" value="create_user">
+            <form id="update-user-form" action="<?= url('services/ajax_functions.php') ?>"autocomplete="off">>
+                <input type="hidden" name="action" value="update_user">
+                <input type="hidden" name="id" id="user_id">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel1">Edit User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -167,14 +168,14 @@ $users = $userModel->getAll();
                         <div class="col mb-0 form-password-toggle">
                             <label class="form-label" for="password">Password</label>
                             <div class="input-group">
-                                <input type="password" name="password" class="form-control" id="password" placeholder="············" aria-describedby="basic-default-password2" required>
+                                <input type="password" name="password" class="form-control" id="password" placeholder="············" aria-describedby="basic-default-password2" required >
                                 <span id="basic-default-password2" class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
                         </div>
                         <div class="col mb-0 form-password-toggle">
                             <label class="form-label" for="basic-default-password12">Confirm Password</label>
                             <div class="input-group">
-                                <input type="password" name="confirm_password" class="form-control" id="basic-default-password12" placeholder="············" aria-describedby="basic-default-password2" required>
+                                <input type="password" name="confirm_password" class="form-control" id="basic-default-password12" placeholder="············" aria-describedby="basic-default-password2" required >
                                 <span id="basic-default-password2" class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
                         </div>
@@ -192,20 +193,34 @@ $users = $userModel->getAll();
                             </div>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col mb-0">
+                            <label class="form-label" for="is_active">Status</label>
+                            <div class="input-group">
+                                <select class="form-select" id="is_active" name="is_active" required>
+                                    <option selected="" value="">Choose...</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3 mt-3">
-                        <div id="alert-container"></div>
+                        <div id="alert-container-update-form"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="create-now" class="btn btn-primary">Save</button>
+                    <button type="button" id="update-now" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+
 
 <?php
 require_once('../layouts/footer.php');
@@ -257,16 +272,128 @@ require_once('../layouts/footer.php');
             }
         });
 
-        $('.edit-user').on('click', function() {
+        $('.edit-user').on('click', async function() {
             var user_id = $(this).data('id');
-            var username = $(this).data('username');
-            // alert(name);
-            // alert(user_id);
-            var email = $(this).data('email');
-
-            $('#editUserModal #username').val(username);
-            $('#editUserModal #email').val(email);
-            $('#editUserModal').modal('show');
-        });
+            await getUserById(user_id);
+        })
     });
+    $('.delete-user').on('click', async function() {
+            var user_id = $(this).data('id');
+            var is_confirm = confirm('Are you sure,Do you want to delete?');
+            if (is_confirm) await deleteById(user_id);
+        })
+    $('#update-now').on('click', function() {
+
+// Get the form element
+var form = $('#update-user-form')[0];
+$('#update-user-form')[0].reportValidity();
+
+// Check form validity
+if (form.checkValidity()) {
+    // Serialize the form data
+    var formData = $('#update-user-form').serialize();
+    var formAction = $('#update-user-form').attr('action');
+
+    // Perform AJAX request
+    $.ajax({
+        url: formAction,
+        type: 'POST',
+        data: formData, // Form data
+        dataType: 'json',
+        success: function(response) {
+            showAlert(response.message, response.success ? 'primary' : 'danger','alert-container-update-form');
+            if (response.success) {
+                $('#editUserModal').modal('hide');
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            }
+        },
+        error: function(error) {
+            // Handle the error
+            console.error('Error submitting the form:', error);
+        },
+        complete: function(response) {
+            // This will be executed regardless of success or error
+            console.log('Request complete:', response);
+        }
+    });
+} else {
+    var message = ('Form is not valid. Please check your inputs.');
+    showAlert(message, 'danger');
+}
+});
+
+    async function getUserById(id) {
+        var formAction = $('#update-user-form').attr('action');
+
+        // Perform AJAX request
+        $.ajax({
+            url: formAction,
+            type: 'GET',
+            data: {
+                user_id: id,
+                action: 'get_user'
+            }, // Form data
+            dataType: 'json',
+            success: function(response) {
+                showAlert(response.message, response.success ? 'primary' : 'danger');
+                if (response.success) {
+                    var user_id = response.data.user_id;
+                    var username = response.data.username;
+                    var email = response.data.email;
+                    var permission = response.data.permission;
+                    var is_active = response.data.is_active;
+
+                    $('#editUserModal #user_id').val(user_id);
+                    $('#editUserModal #username').val(username);
+                    $('#editUserModal #email').val(email);
+                    $('#editUserModal #permission option[value="' + permission + '"]').prop('selected', true);
+                    $('#editUserModal #is_active option[value="' + is_active + '"]').prop('selected', true);
+
+                    $('#editUserModal').modal('show');
+                }
+            },
+            error: function(error) {
+                // Handle the error
+                console.error('Error submitting the form:', error);
+            },
+            complete: function(response) {
+                // This will be executed regardless of success or error
+                console.log('Request complete:', response);
+            }
+        });
+    }
+    async function deleteById(id) {
+        var formAction = $('#update-user-form').attr('action');
+
+        // Perform AJAX request
+        $.ajax({
+            url: formAction,
+            type: 'GET',
+            data: {
+                user_id: id,
+                action: 'delete_user'
+            }, // Form data
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                }
+            },
+            error: function(error) {
+                // Handle the error
+                console.error('Error submitting the form:', error);
+            },
+            complete: function(response) {
+                // This will be executed regardless of success or error
+                console.log('Request complete:', response);
+            }
+        });
+    } 
+
+
+
 </script>

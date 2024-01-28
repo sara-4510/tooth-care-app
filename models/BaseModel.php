@@ -67,5 +67,5 @@ abstract class BaseModel
     {
         $param = array(':id' => $id);
         return $this->pm->run("DELETE FROM " . $this->getTableName() . " WHERE id = :id", $param);
-    }
+      }
 }

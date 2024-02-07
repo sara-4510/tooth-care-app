@@ -1,21 +1,14 @@
 <?php
 require_once('../layouts/header.php');
-require_once __DIR__ . './../../models/Doctor.php';
+require_once __DIR__ . './../../models/DoctorAvailability.php';
 
-$doctorModel = new Doctor();
-$doctors = $doctorModel->getAll();
+$doctorAvailabilityModel = new DoctorAvailability();
+$doctorAvailabilities = $doctorAvailabilityModel->getAll();
+
 ?>
-
 <div class="container">
 
-    <h1 class="mx-3 my-5">
-       Doctors
-
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary float-end m-3" data-bs-toggle="modal" data-bs-target="#createUserModal">
-            Create Availability
-        </button>
-    </h1>
+    <h1 class="mx-3 my-5">Doctor Availability</h1>
     <section class="content m-3">
         <div class="container-fluid">
             <div class="card">
@@ -25,22 +18,24 @@ $doctors = $doctorModel->getAll();
                         <thead>
                             <tr>
                                 <th style="width: 10px">#</th>
-                                <th class="">Name</th>
-                                <th class="">About</th>
-                                <th class="">Photo</th>
+                                <th class="">Day</th>
+                                <th class="">Session From</th>
+                                <th class="">Session To</th>
+                                <th class="">Doctor</th>
                                 <th class="">Status</th>
                                 <!-- <th class="text-center" style="width: 200px">Options</th> -->
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            foreach ($doctors as $c) {
+                            foreach ($doctorAvailabilities as $c) {
                             ?>
                                 <tr>
                                     <td> <?= $c['id'] ?? ""; ?> </td>
-                                    <td> <?= $c['name'] ?? ""; ?> </td>
-                                    <td> <?= $c['about'] ?? ""; ?> </td>
-                                    <td> <img src="<?= asset('assets/img/avatars/1.png') ?>" alt="user-avatar" class="d-block rounded m-3" width="80" id="uploadedAvatar"> </td>
+                                    <td> <?= $c['day'] ?? ""; ?> </td>
+                                    <td> <?= $c['session_from'] ?? ""; ?> </td>
+                                    <td> <?= $c['session_to'] ?? ""; ?> </td>
+                                    <td> <?= $c['doctor_name'] ?? ""; ?> </td>
                                     <td>
                                         <div class="">
                                             <?php if ($c['is_active'] == 1) { ?>
@@ -58,7 +53,6 @@ $doctors = $doctorModel->getAll();
                                         </div>
                                     </td> -->
                                 </tr>
-                               
                             <?php
                             }
                             ?>
@@ -70,5 +64,4 @@ $doctors = $doctorModel->getAll();
         </div>
     </section>
 </div>
-
 <?php require_once('../layouts/footer.php'); ?>

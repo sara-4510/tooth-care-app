@@ -1,10 +1,11 @@
 <?php
 require_once '../config.php';
 require_once '../helpers/AppManager.php';
-// require_once '../models/Appointment.php';
-// require_once '../models/Payment.php';
-// require_once '../models/Treatment.php';
+require_once '../models/Appointment.php';
+require_once '../models/Payment.php';
+require_once '../models/Treatment.php';
 require_once '../models/User.php';
+require_once '../models/Doctor.php';
 
 //create user
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_user') {
@@ -15,9 +16,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $password = $_POST['password'];
         $permission = $_POST['permission'];
 
+        $doctor_name=$_POST['doctor_name']??null;
+        $about_doctor=$_POST['about_doctor']??null;
+
         $userModel = new User();
         $created =  $userModel->createUser($username, $password, $permission, $email);
+       
         if ($created) {
+
+             if ($permission=='doctor') {
+                $user_id=$userModel->getLastInsertedUserId();
+                $doctorModel = new Doctor();
+                $doctorCreated =  $doctorModel->createDoctor($doctor_name,  $about_doctor, $user_id);
+             }
             echo json_encode(['success' => true, 'message' => "User created successfully!"]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to create user. May be user already exist!']);
@@ -218,3 +229,93 @@ if (
     }
     exit;
 }
+
+
+
+dd('Access denied..!');
+// // Create doctor availability
+// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_doctor_availability') {
+
+//     try {
+//         $day = $_POST['day'];
+//         $session_from = $_POST['session_from'];
+//         $session_to = $_POST['session_to'];
+
+//         $availabilityModel = new Availability();
+//         $created = $availabilityModel->createAvailability($day, $session_from, $session_to);
+
+//         if ($created) {
+//             echo json_encode(['success' => true, 'message' => "Doctor availability created successfully!"]);
+//         } else {
+//             echo json_encode(['success' => false, 'message' => 'Failed to create doctor availability.']);
+//         }
+//     } catch (PDOException $e) {
+//         // Handle database connection errors
+//         echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+//     }
+//     exit;
+// }
+
+// // Get doctor availability by id
+// if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['doctor_id']) && isset($_GET['action']) &&  $_GET['action'] == 'get_doctor_availability') {
+
+//     try {
+//         $doctor_id = $_GET['doctor_id'];
+//         $availabilityModel = new Availability();
+//         $availability = $availabilityModel->getById($doctor_id);
+
+//         if ($availability) {
+//             echo json_encode(['success' => true, 'message' => "Doctor availability retrieved successfully!", 'data' => $availability]);
+//         } else {
+//             echo json_encode(['success' => false, 'message' => 'Failed to retrieve doctor availability.']);
+//         }
+//     } catch (PDOException $e) {
+//         // Handle database connection errors
+//         echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+//     }
+//     exit;
+// }
+
+// // Delete doctor availability by id
+// if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['doctor_id']) && isset($_GET['action']) &&  $_GET['action'] == 'delete_doctor_availability') {
+
+//     try {
+//         $doctor_id = $_GET['doctor_id'];
+//         $availabilityModel = new Availability();
+//         $deleted = $availabilityModel->deleteAvailability($doctor_id);
+
+//         if ($deleted) {
+//             echo json_encode(['success' => true, 'message' => "Doctor availability deleted successfully!", 'data' => $deleted]);
+//         } else {
+//             echo json_encode(['success' => false, 'message' => 'Failed to delete doctor availability.']);
+//         }
+//     } catch (PDOException $e) {
+//         // Handle database connection errors
+//         echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+//     }
+//     exit;
+// }
+
+// // Update doctor availability
+// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_doctor_availability') {
+
+//     try {
+//         $day = $_POST['day'];
+//         $session_from = $_POST['session_from'];
+//         $session_to = $_POST['session_to'];
+//         $id = $_POST['id'];
+
+//         $availabilityModel = new Availability();
+//         $updated = $availabilityModel->updateAvailability($id, $day, $session_from, $session_to);
+
+//         if ($updated) {
+//             echo json_encode(['success' => true, 'message' => "Doctor availability updated successfully!"]);
+//         } else {
+//             echo json_encode(['success' => false, 'message' => 'Failed to update doctor availability.']);
+//         }
+//     } catch (PDOException $e) {
+//         // Handle database connection errors
+//         echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+//     }
+//     exit;
+// }

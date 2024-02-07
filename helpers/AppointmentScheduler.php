@@ -63,90 +63,96 @@ class AppointmentScheduler
     /**
      * Display the schedule of available appointments for a doctor.
      */
-    // public function displaySchedule()
-    // {
-    //     // Create a Doctor model instance and fetch the doctor details by ID.
-    //     $doctorModel = new Doctor();
-    //     $doctor = $doctorModel->getById($this->doctorId);
+    public function displaySchedule()
+    {
+        // Create a Doctor model instance and fetch the doctor details by ID.
+        $doctorModel = new Doctor();
+        $doctor = $doctorModel->getById($this->doctorId);
 
-    //     // Output the doctor's information and navigation back button.
-    //     echo '<div class="container">';
-    //     echo '<div class="row">';
-    //     echo '<div class="col-8">';
-    //     echo '<h2 class="mx- mt-5">' . ($doctor['name'] ?? "") . '</h2>';
-    //     echo '<h5 class="mx- mb-3">' . ($doctor['about'] ?? "") . '</h3>';
-    //     echo '</div>';
-    //     echo '<div class="col-4">';
-    //     echo '<div class="form-group d-flex justify-content-end mx-5 my-5">';
-    //     echo '<a href="' . url('views/admin/available_channelings.php') . '" class="btn btn-dark active" id="courier_service_modal_btn">Back</a>';
-    //     echo '</div>';
-    //     echo '</div>';
-    //     echo '</div>';
+        // Output the doctor's information and navigation back button.
+        echo '<div class="container">';
+        echo '<div class="row">';
+        echo '<div class="col-8">';
+        echo '<h2 class="mx- mt-5">' . ($doctor['name'] ?? "") . '</h2>';
+        echo '<h5 class="mx- mb-3">' . ($doctor['about'] ?? "") . '</h3>';
+        echo '</div>';
+        echo '<div class="col-4">';
+        echo '<div class="form-group d-flex justify-content-end mx-5 my-5">';
+        echo '<a href="' . url('views/admin/available_channelings.php') . '" class="btn btn-dark active" id="courier_service_modal_btn">Back</a>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
 
-    //     // Output the appointment schedule section.
-    //     echo '<section class="content m-3">';
-    //     echo '<div class="container-fluid">';
+        // Output the appointment schedule section.
+        echo '<section class="content m-3">';
+        echo '<div class="container-fluid">';
 
-    //     // Loop through each day in the week.
-    //     foreach ($this->days as $dayCount => $day) {
-    //         // Calculate the current date based on the first day of the week and the day count.
-    //         $currentDate = clone $this->firstDayOfWeek;
-    //         $currentDate->modify("+$dayCount days");
+        // Loop through each day in the week.
+        foreach ($this->days as $dayCount => $day) {
+            // Calculate the current date based on the first day of the week and the day count.
+            $currentDate = clone $this->firstDayOfWeek;
+            $currentDate->modify("+$dayCount days");
 
-    //         $currentDateFullString = $currentDate->format("l, F j, Y");
-    //         $currentDateString = $currentDate->format("Y-m-d");
+            $currentDateFullString = $currentDate->format("l, F j, Y");
+            $currentDateString = $currentDate->format("Y-m-d");
 
-    //         // Loop through available slots and check if they match the current day.
-    //         foreach ($this->availableSlots as $slot) {
-    //             $slotDay = $slot['day'] ?? "";
+            if (!empty($this->availableSlots)) {
+                // Loop through available slots and check if they match the current day.
+                foreach ($this->availableSlots as $slot) {
+                    $slotDay = $slot['day'] ?? "";
 
-    //             if ($slotDay == $day) {
-    //                 $sessionFrom = new DateTime($slot['session_from']);
-    //                 $sessionTo = new DateTime($slot['session_to']);
-    //                 $currentSlot = clone $sessionFrom;
+                    if ($slotDay == $day) {
+                        $sessionFrom = new DateTime($slot['session_from']);
+                        $sessionTo = new DateTime($slot['session_to']);
+                        $currentSlot = clone $sessionFrom;
 
-    //                 // Output a row for each day with available slots.
-    //                 echo '<div class="row my-5 border rounded border-secondary"><h3 class="mt-4 text-capitalize">' . $currentDateFullString . '</h3>';
+                        // Output a row for each day with available slots.
+                        echo '<div class="row my-5 border rounded border-secondary"><h3 class="mt-4 text-capitalize">' . $currentDateFullString . '</h3>';
 
-    //                 // Loop through time slots for the current day.
-    //                 while ($currentSlot <= $sessionTo) {
-    //                     $time_slot_from = $currentSlot->format('h:i A');
-    //                     $time_slot_to = $currentSlot->add($this->slotDuration)->format('h:i A');
+                        // Loop through time slots for the current day.
+                        while ($currentSlot <= $sessionTo) {
+                            $time_slot_from = $currentSlot->format('h:i A');
+                            $time_slot_to = $currentSlot->add($this->slotDuration)->format('h:i A');
 
-    //                     echo '<div class="col-3">';
-    //                     echo '<div class="card m-3 mb-5">';
-    //                     echo '<div class="card-body">';
-    //                     echo '<h5 class="card-title">Appointment Slot</h5>';
-    //                     echo '<p class="card-text">' . $time_slot_from . ' to ' . $time_slot_to . '</p>';
+                            echo '<div class="col-3">';
+                            echo '<div class="card m-3 mb-5">';
+                            echo '<div class="card-body">';
+                            echo '<h5 class="card-title">Appointment Slot</h5>';
+                            echo '<p class="card-text">' . $time_slot_from . ' to ' . $time_slot_to . '</p>';
 
-    //                     $currentSlot->sub($this->slotDuration);
-    //                     $timeSlotFrom = $currentSlot->format('H:i:s');
-    //                     $timeSlotTo = $currentSlot->add($this->slotDuration)->format('H:i:s');
+                            $currentSlot->sub($this->slotDuration);
+                            $timeSlotFrom = $currentSlot->format('H:i:s');
+                            $timeSlotTo = $currentSlot->add($this->slotDuration)->format('H:i:s');
 
-    //                     // Check the availability of the time slot.
-    //                     if ($this->today > $currentDate) {
-    //                         echo '<button disabled class="btn btn-warning d-flex">Expired</button>';
-    //                     } else if ($this->isTimeSlotAvailable($timeSlotFrom, $this->existingAppointments, $currentDateString)) {
-    //                         echo '<button type="button" data-appointment-date="' . $currentDateString . '" data-time-slot-to="' . $timeSlotTo . '" data-time-slot-from="' . $timeSlotFrom . '" class="btn btn-primary active book-modal" data-bs-toggle="modal" data-bs-target="#appointmentModal">Available</button>';
-    //                     } else {
-    //                         echo '<button disabled class="btn btn-danger text-center">Booked</button>';
-    //                     }
+                            // Check the availability of the time slot.
+                            if ($this->today > $currentDate) {
+                                echo '<button disabled class="btn btn-warning d-flex">Expired</button>';
+                            } else if ($this->isTimeSlotAvailable($timeSlotFrom, $this->existingAppointments, $currentDateString)) {
+                                echo '<button type="button" data-appointment-date="' . $currentDateString . '" data-time-slot-to="' . $timeSlotTo . '" data-time-slot-from="' . $timeSlotFrom . '" class="btn btn-primary active book-modal" data-bs-toggle="modal" data-bs-target="#appointmentModal">Available</button>';
+                            } else {
+                                echo '<button disabled class="btn btn-danger text-center">Booked</button>';
+                            }
 
-    //                     echo '</div>';
-    //                     echo '</div>';
-    //                     echo '</div>';
-    //                 }
+                            echo '</div>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
 
-    //                 echo '</div>';
-    //             }
-    //         }
-    //     }
+                        echo '</div>';
+                    }
+                }
+            }
+        }
 
-    //     // Close the HTML container tags.
-    //     echo '</div>';
-    //     echo '</section>';
-    //     echo '</div>';
-    // }
+        if (empty($this->availableSlots)) {
+            echo 'No doctor availability.';
+        }
+
+        // Close the HTML container tags.
+        echo '</div>';
+        echo '</section>';
+        echo '</div>';
+    }
 
 
     /**

@@ -26,6 +26,7 @@ class User extends BaseModel
             ':permission' => $this->permission,
             ':email' => $this->email,
             ':is_active' => $this->is_active
+
         );
 
         return $this->pm->run("INSERT INTO " . $this->getTableName() . "(username, password,permission,email,is_active) values(:username, :password,:permission,:email,:is_active)", $param);
@@ -100,9 +101,9 @@ class User extends BaseModel
         $user->email = $email;
         $user->is_active = $is_active;
         $user->addNewRec();
-
+           
         if ($user) {
-            return true; // User created successfully
+            return $user; // User created successfully
         } else {
             return false; // User creation failed (likely due to database error)
         }
@@ -164,4 +165,10 @@ function deleteUser($id)
         return false; // User update failed (likely due to database error)
     }
 }
+
+public function getLastInsertedUserId()
+{
+    $result=$this->pm->run('SELECT MAX(id) as lastInsertedId FROM users',null,true);
+        return $result['lastInsertedId']?? 100;
+ }
 }
